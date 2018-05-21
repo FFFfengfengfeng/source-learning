@@ -22,6 +22,24 @@
         }
     }
 
+    // 关闭APP loading
+    Weyee.prototype.hideLoading = function() {
+        if (isIOS) {
+            window.webkit.messageHandlers.hideLoading.postMessage({});
+        } else {
+            window.android.hideLoading();
+        }
+    }
+
+    // 设置标题
+    Weyee.prototype.setTitle = function(options) {
+        if (isIOS) {
+            window.webkit.messageHandlers.setTittle.postMessage({title: options.title});
+        } else {
+            window.android.setTittle(options.title);
+        }
+    }
+
     // 调用设备摄像头
     Weyee.prototype.openCamera = function() {
         console.log('打开摄像头了');
