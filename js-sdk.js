@@ -40,6 +40,42 @@ class Weyee {
             window.android.showSelectDate('fuckdate');
         }
     }
+    
+    // 上传图片
+    upload() {
+        if (this.isIOS) {
+            window.webkit.messageHandlers.upload.postMessage({title: 'upload'});
+        } else {
+            window.android.upload()
+        }
+    }
+
+    // 查看大图
+    showBig(options) {
+        if (this.isIOS) {
+            window.webkit.messageHandlers.showBig.postMessage({index: options.index, imgUrls: options.imgs})
+        } else {
+            window.android.showBig(options.index, options.imgs)
+        }
+    }
+
+    // 关闭webView
+    closeWebview() {
+        if (this.isIOS) {
+            window.webkit.messageHandlers.closeWebview.postMessage({})
+        } else {
+            window.android.closeWebview()
+        }
+    }
+
+    // 获取经营日报的次数
+    setDailyTimes(options) {
+        if (this.isIOS) {
+            window.webkit.messageHandlers.setDailyTimes.postMessage({times: options.daily_times});
+        } else {
+            window.android.closeWebview(options.daily_times)
+        }
+    }
 }
 
 export default new Weyee();
