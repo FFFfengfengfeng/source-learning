@@ -1,49 +1,45 @@
-!(function(global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) : (global.Weyee = factory());
-}(this, (function() {
-    'use strict';
-
-    // 判断设备类型
-    var UA = typeof window !== 'undefined' && window.navigator.userAgent.toLowerCase();
-    var isIOS = UA && /iphone|ipad|ipod|ios/.test(UA);
-    var isAndroid = UA && UA.indexOf('android') > 0;
-    
-    function Weyee(options) {
-        console.log(1);
-    }
-
-    // 调用APP loading
-    Weyee.prototype.openLoading = function() {
-        if (isIOS) {
-            console.log('IOS');
-        } else {
-            console.log('Android');
-        }
-    }
-
-    // 关闭APP loading
-    Weyee.prototype.hideLoading = function() {
-        if (isIOS) {
-            window.webkit.messageHandlers.hideLoading.postMessage({});
-        } else {
-            window.android.hideLoading();
-        }
+class Weyee {
+    constructor() {
+        this.UA = typeof window !== 'undefined' && window.navigator.userAgent.toLowerCase();
+        this.isIOS = this.UA && /iphone|ipad|ipod|ios/.test(this.UA);
+        this.isAndroid = this.UA && this.UA.indexOf('android') > 0;
     }
 
     // 设置标题
-    Weyee.prototype.setTitle = function(options) {
-        if (isIOS) {
+    setTitle(title) {
+        if (this.isIOS) {
             window.webkit.messageHandlers.setTittle.postMessage({title: options.title});
         } else {
             window.android.setTittle(options.title);
         }
     }
 
-    // 调用设备摄像头
-    Weyee.prototype.openCamera = function() {
-        console.log('打开摄像头了');
+    // 关闭loading
+    hideLoading() {
+        if (this.isIOS) {
+            window.webkit.messageHandlers.hideLoading.postMessage({});
+        } else {
+            window.android.hideLoading();
+        }
     }
 
-    return new Weyee();
-})));
+    // 打开loading
+    showLoading() {
+        if (this.isIOS) {
+            window.webkit.messageHandlers.showLoading.postMessage({});
+        } else {
+            window.android.showLoading();
+        }
+    }
+
+    // 打开日期插件
+    openDate() {
+        if (this.isIOS) {
+            window.webkit.messageHandlers.showSelectDate.postMessage('openDate');
+        } else {
+            window.android.showSelectDate('fuckdate');
+        }
+    }
+}
+
+export default new Weyee();
