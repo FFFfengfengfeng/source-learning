@@ -4,6 +4,10 @@
  * Released under the MIT License.
  */
 (function (global, factory) {
+  // 如果是CommonJS, 就通过module.exports导出Vue
+  // 如果是AMD, 就通过define导出Vue
+  // 在全局添加一个Vue
+  
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
   (global = global || self, global.Vue = factory());
@@ -11,22 +15,27 @@
 
   /*  */
 
+  // 使用Object.freeze冻结一个空对象
   var emptyObject = Object.freeze({});
 
   // These helpers produce better VM code in JS engines due to their
   // explicitness and function inlining.
+  // 如果一个值全等于undefined或者全等于null, 返回true
   function isUndef (v) {
     return v === undefined || v === null
   }
 
+  // 如果一个值不全等于undefined并且不全等于null, 返回true
   function isDef (v) {
     return v !== undefined && v !== null
   }
 
+  // 如果一个值等于true并且是布尔类型返回true
   function isTrue (v) {
     return v === true
   }
 
+  // 如果一个值等于false并且是布尔类型返回true
   function isFalse (v) {
     return v === false
   }
@@ -34,6 +43,8 @@
   /**
    * Check if value is primitive.
    */
+  // 判断一个值是不是原始数据类型
+  // 如果值是string或者number, ES6新增的symbol和boolean就返回true
   function isPrimitive (value) {
     return (
       typeof value === 'string' ||
@@ -49,6 +60,8 @@
    * Objects from primitive values when we know the value
    * is a JSON-compliant type.
    */
+  // 判断是否是一个对象
+  // 执行typeof 返回 'object' 并且不等于null
   function isObject (obj) {
     return obj !== null && typeof obj === 'object'
   }
@@ -56,8 +69,11 @@
   /**
    * Get the raw type string of a value, e.g., [object Object].
    */
+  // 保存Object.prototype.toString的引用
   var _toString = Object.prototype.toString;
 
+  // 返回toString的type
+  // 如: [object object], 返回后一个object
   function toRawType (value) {
     return _toString.call(value).slice(8, -1)
   }
@@ -66,10 +82,12 @@
    * Strict object type check. Only returns true
    * for plain JavaScript objects.
    */
+  // 使用toString判断一个对象是不是一个普通JS对象
   function isPlainObject (obj) {
     return _toString.call(obj) === '[object Object]'
   }
 
+  // 使用toString判断一个对象是不是一个正则对象
   function isRegExp (v) {
     return _toString.call(v) === '[object RegExp]'
   }
@@ -77,11 +95,15 @@
   /**
    * Check if val is a valid array index.
    */
+  // 判断是不是一个合法的下表
+  // 如果n大于或等于0, 并且向下取整等于自身, 并且isFinite返回true, 即不超过Number.MAX_VALUE和Number.MIN_VALUE
   function isValidArrayIndex (val) {
     var n = parseFloat(String(val));
     return n >= 0 && Math.floor(n) === n && isFinite(val)
   }
 
+  // 判断是不是一个promise对象
+  // 不等于undefined和null, 并且有then和catch方法
   function isPromise (val) {
     return (
       isDef(val) &&
@@ -93,6 +115,10 @@
   /**
    * Convert a value to a string that is actually rendered.
    */
+  // 自定义toString方法
+  // 如果值等于null返回空字符串
+  // 如果值是一个数组或者是一个普通对象, 返回JSON.stringify, 每个级别缩进2个空格
+  // 否则返回一个String装箱的结果
   function toString (val) {
     return val == null
       ? ''
@@ -105,6 +131,9 @@
    * Convert an input value to a number for persistence.
    * If the conversion fails, return original string.
    */
+  // 自定义toNumber方法
+  // 对值调用parseFloat
+  // 如果isNaN是true就直接返回该值, 否则返回parseFloat之后的值
   function toNumber (val) {
     var n = parseFloat(val);
     return isNaN(n) ? val : n
@@ -114,6 +143,9 @@
    * Make a map and return a function for checking if a key
    * is in that map.
    */
+  // 创建一个字典
+  // str表示一个字符串, expectsLowerCase表示是否需要大小写
+  // 返回一个函数
   function makeMap (
     str,
     expectsLowerCase
