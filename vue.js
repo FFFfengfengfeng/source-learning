@@ -163,16 +163,20 @@
   /**
    * Check if a tag is a built-in tag.
    */
+  // 判断传入的标签字符串是不是slot和component, 如果是就是自定义标签
+  // 传入的时候同时转小写
   var isBuiltInTag = makeMap('slot,component', true);
 
   /**
    * Check if an attribute is a reserved attribute.
    */
+  // 判断是不是预定义的attr属性: key, ref, slot, slot-scope, is
   var isReservedAttribute = makeMap('key,ref,slot,slot-scope,is');
 
   /**
    * Remove an item from an array.
    */
+  // 从数组删除一个元素
   function remove (arr, item) {
     if (arr.length) {
       var index = arr.indexOf(item);
@@ -185,6 +189,7 @@
   /**
    * Check whether an object has the property.
    */
+  // 判断一个对象属性是自己的不是通过原型继承的
   var hasOwnProperty = Object.prototype.hasOwnProperty;
   function hasOwn (obj, key) {
     return hasOwnProperty.call(obj, key)
@@ -193,6 +198,7 @@
   /**
    * Create a cached version of a pure function.
    */
+  
   function cached (fn) {
     var cache = Object.create(null);
     return (function cachedFn (str) {
