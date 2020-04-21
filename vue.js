@@ -212,6 +212,7 @@
   /**
    * Camelize a hyphen-delimited string.
    */
+  // 将'-'连接的字符串转换成驼峰
   var camelizeRE = /-(\w)/g;
   var camelize = cached(function (str) {
     return str.replace(camelizeRE, function (_, c) { return c ? c.toUpperCase() : ''; })
@@ -220,6 +221,7 @@
   /**
    * Capitalize a string.
    */
+  // 首字母大写
   var capitalize = cached(function (str) {
     return str.charAt(0).toUpperCase() + str.slice(1)
   });
@@ -227,6 +229,7 @@
   /**
    * Hyphenate a camelCase string.
    */
+  // 将驼峰转换成短划线命名
   var hyphenateRE = /\B([A-Z])/g;
   var hyphenate = cached(function (str) {
     return str.replace(hyphenateRE, '-$1').toLowerCase()
@@ -241,8 +244,10 @@
    */
 
   /* istanbul ignore next */
+  // bind方法的兼容, 垫片
   function polyfillBind (fn, ctx) {
     function boundFn (a) {
+      // 参数长度
       var l = arguments.length;
       return l
         ? l > 1
@@ -259,6 +264,7 @@
     return fn.bind(ctx)
   }
 
+  // 能力检测, 如果bind有原生实现就用原生实现
   var bind = Function.prototype.bind
     ? nativeBind
     : polyfillBind;
@@ -266,6 +272,7 @@
   /**
    * Convert an Array-like object to a real Array.
    */
+  // 将一个类数组转换成数组
   function toArray (list, start) {
     start = start || 0;
     var i = list.length - start;
@@ -279,6 +286,7 @@
   /**
    * Mix properties into target object.
    */
+  // 将_form对象的属性复制到to上
   function extend (to, _from) {
     for (var key in _from) {
       to[key] = _from[key];
@@ -289,6 +297,8 @@
   /**
    * Merge an Array of Objects into a single Object.
    */
+  // 将一个数组转换成一个对象
+  // 通过extend合并
   function toObject (arr) {
     var res = {};
     for (var i = 0; i < arr.length; i++) {
@@ -306,11 +316,13 @@
    * Stubbing args to make Flow happy without leaving useless transpiled code
    * with ...rest (https://flow.org/blog/2017/05/07/Strict-Function-Call-Arity/).
    */
+  // 标记
   function noop (a, b, c) {}
 
   /**
    * Always return false.
    */
+  // 标记
   var no = function (a, b, c) { return false; };
 
   /* eslint-enable no-unused-vars */
@@ -318,11 +330,13 @@
   /**
    * Return the same value.
    */
+  // 标记
   var identity = function (_) { return _; };
 
   /**
    * Generate a string containing static keys from compiler modules.
    */
+  // 连接每个modules的staticKeys
   function genStaticKeys (modules) {
     return modules.reduce(function (keys, m) {
       return keys.concat(m.staticKeys || [])
@@ -333,27 +347,28 @@
    * Check if two values are loosely equal - that is,
    * if they are plain objects, do they have the same shape?
    */
+  // 松散判断相等
   function looseEqual (a, b) {
-    if (a === b) { return true }
+    if (a === b) { return true } // 如果两个值是原始数据类型并且全等, 返回true
     var isObjectA = isObject(a);
     var isObjectB = isObject(b);
-    if (isObjectA && isObjectB) {
+    if (isObjectA && isObjectB) { // 如果两个值都是object类型
       try {
         var isArrayA = Array.isArray(a);
         var isArrayB = Array.isArray(b);
-        if (isArrayA && isArrayB) {
+        if (isArrayA && isArrayB) { // 如果是数组, 判断两个长度并且每个值都相等
           return a.length === b.length && a.every(function (e, i) {
-            return looseEqual(e, b[i])
+            return looseEqual(e, b[i]) // 递归引用, 判断值是不是相等
           })
-        } else if (a instanceof Date && b instanceof Date) {
-          return a.getTime() === b.getTime()
-        } else if (!isArrayA && !isArrayB) {
+        } else if (a instanceof Date && b instanceof Date) { // 如果两个值是Date类型
+          return a.getTime() === b.getTime() // 判断时间戳判断两个时间是不是相等
+        } else if (!isArrayA && !isArrayB) { // 如果不是数组
           var keysA = Object.keys(a);
           var keysB = Object.keys(b);
-          return keysA.length === keysB.length && keysA.every(function (key) {
+          return keysA.length === keysB.length && keysA.every(function (key) { // 判断两个对象键值对是不是相等
             return looseEqual(a[key], b[key])
           })
-        } else {
+        } else { // 如果都不是返回false
           /* istanbul ignore next */
           return false
         }
@@ -361,10 +376,10 @@
         /* istanbul ignore next */
         return false
       }
-    } else if (!isObjectA && !isObjectB) {
-      return String(a) === String(b)
+    } else if (!isObjectA && !isObjectB) { // 如果不是object也不是原始数据类型
+      return String(a) === String(b) // 字符串装箱是不是相同
     } else {
-      return false
+      return false // 默认返回false
     }
   }
 
@@ -373,6 +388,7 @@
    * found in the array (if value is a plain object, the array must
    * contain an object of the same shape), or -1 if it is not present.
    */
+  // 使用looseEqual找到val在数组中的下标
   function looseIndexOf (arr, val) {
     for (var i = 0; i < arr.length; i++) {
       if (looseEqual(arr[i], val)) { return i }
@@ -383,8 +399,9 @@
   /**
    * Ensure a function is called only once.
    */
+  // 执行一次
   function once (fn) {
-    var called = false;
+    var called = false; // 阀值
     return function () {
       if (!called) {
         called = true;
@@ -395,12 +412,14 @@
 
   var SSR_ATTR = 'data-server-rendered';
 
+  // assettypes
   var ASSET_TYPES = [
     'component',
     'directive',
     'filter'
   ];
 
+  // 钩子函数
   var LIFECYCLE_HOOKS = [
     'beforeCreate',
     'created',
@@ -419,7 +438,8 @@
   /*  */
 
 
-
+ // 配置
+ // 问题-为什么要用括号?
   var config = ({
     /**
      * Option merge strategies (used in core/util/options)
