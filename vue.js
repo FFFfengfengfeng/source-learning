@@ -198,8 +198,10 @@
   /**
    * Create a cached version of a pure function.
    */
-  // 
+  // 缓存方法
+  // 如果有就直接返回
   function cached (fn) {
+    // 创建一个干净的空对象
     var cache = Object.create(null);
     return (function cachedFn (str) {
       var hit = cache[str];
