@@ -198,7 +198,7 @@
   /**
    * Create a cached version of a pure function.
    */
-  
+  // 
   function cached (fn) {
     var cache = Object.create(null);
     return (function cachedFn (str) {
