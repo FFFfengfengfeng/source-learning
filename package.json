@@ -6,6 +6,8 @@
   "author": "ffffengfengfeng <1098865109@qq.com>",
   "license": "MIT",
   "dependencies": {
+    "jquery": "^3.5.0",
+    "react": "^16.13.1",
     "vue": "^2.6.11"
   }
 }
