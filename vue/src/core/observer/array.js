@@ -5,7 +5,10 @@
 
 import { def } from '../util/index'
 
+// 将Array.prototype保存在arrayProto上
 const arrayProto = Array.prototype
+// 使用Object.create, 创建一个arrayMethods对象
+// 相当于把arrayMethods的原型__proto__指向arrayProto
 export const arrayMethods = Object.create(arrayProto)
 
 const methodsToPatch = [

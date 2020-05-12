@@ -130,10 +130,15 @@ export const isReservedAttribute = makeMap('key,ref,slot,slot-scope,is')
 /**
  * Remove an item from an array.
  */
+// 从数组删除一个元素
 export function remove (arr: Array<any>, item: any): Array<any> | void {
+  // 判断数组的长度, 如果为0则不操作
   if (arr.length) {
+    // 查找传入元素的在数组的下标
     const index = arr.indexOf(item)
+    // 如果下标不为-1 indexOf没有找到返回-1
     if (index > -1) {
+      // splice会改变原数组, index是需要删除的下标, 1是删除的个数
       return arr.splice(index, 1)
     }
   }

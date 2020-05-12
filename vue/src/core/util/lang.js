@@ -18,6 +18,10 @@ export function isReserved (str: string): boolean {
 /**
  * Define a property.
  */
+// 通过Object.defineProperty为对象添加属性
+// 可以通过enumerable设置是否可枚举
+// writable: true,
+// configurable: true
 export function def (obj: Object, key: string, val: any, enumerable?: boolean) {
   Object.defineProperty(obj, key, {
     value: val,

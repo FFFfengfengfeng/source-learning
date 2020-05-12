@@ -16,14 +16,18 @@ import {
   isServerRendering
 } from '../util/index'
 
+// 获取数组原型上的所有方法名
+// arrayMethods是通过Object.create(Array.prototype)创建的(src/core/observer/array.js)
 const arrayKeys = Object.getOwnPropertyNames(arrayMethods)
 
 /**
  * In some cases we may want to disable observation inside a component's
  * update computation.
  */
+// 是否需要观察的阀值
 export let shouldObserve: boolean = true
 
+// 用来改变是否需要观察的阀值
 export function toggleObserving (value: boolean) {
   shouldObserve = value
 }
@@ -34,7 +38,8 @@ export function toggleObserving (value: boolean) {
  * object's property keys into getter/setters that
  * collect dependencies and dispatch updates.
  */
-export class Observer {
+// 观察者构造函数
+ export class Observer {
   value: any;
   dep: Dep;
   vmCount: number; // number of vms that have this object as root $data
@@ -43,11 +48,16 @@ export class Observer {
     this.value = value
     this.dep = new Dep()
     this.vmCount = 0
+    // 将当前实例合并到value的__ob__属性上, def(src/core/util/lang.js)
     def(value, '__ob__', this)
+    // 如果value是一个数组
     if (Array.isArray(value)) {
+      // 如果__proto__ in {}, 即可以使用__proto__指针, __proto__指向的是当前对象的父类的原型对象
       if (hasProto) {
+        // 将value的__proto__指向arrayMethods
         protoAugment(value, arrayMethods)
       } else {
+        // 如果不能使用__proto__, 就循环将arrayMethods的每个属性复制到value上
         copyAugment(value, arrayMethods, arrayKeys)
       }
       this.observeArray(value)
@@ -61,6 +71,7 @@ export class Observer {
    * getter/setters. This method should only be called when
    * value type is Object.
    */
+  // 监视一个对象
   walk (obj: Object) {
     const keys = Object.keys(obj)
     for (let i = 0; i < keys.length; i++) {
@@ -71,6 +82,8 @@ export class Observer {
   /**
    * Observe a list of Array items.
    */
+  // 监视一个数组
+  // 对每个元素调用observe
   observeArray (items: Array<any>) {
     for (let i = 0, l = items.length; i < l; i++) {
       observe(items[i])
@@ -84,6 +97,7 @@ export class Observer {
  * Augment a target Object or Array by intercepting
  * the prototype chain using __proto__
  */
+// 改变对象的__proto__指向, 实现继承
 function protoAugment (target, src: Object) {
   /* eslint-disable no-proto */
   target.__proto__ = src
@@ -95,6 +109,9 @@ function protoAugment (target, src: Object) {
  * hidden properties.
  */
 /* istanbul ignore next */
+// 复制对象的属性
+// 循环遍历keys, 将src的属性复制到target上
+// def是Object.defineProperty
 function copyAugment (target: Object, src: Object, keys: Array<string>) {
   for (let i = 0, l = keys.length; i < l; i++) {
     const key = keys[i]
@@ -132,6 +149,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
 /**
  * Define a reactive property on an Object.
  */
+// 监视一个对象
 export function defineReactive (
   obj: Object,
   key: string,
@@ -141,28 +159,47 @@ export function defineReactive (
 ) {
   const dep = new Dep()
 
+  // 获取对象的key的属性描述符
   const property = Object.getOwnPropertyDescriptor(obj, key)
+
+  // 如果对象存在并且configurable是false
   if (property && property.configurable === false) {
     return
   }
 
   // cater for pre-defined getter/setters
+  // 保存改属性描述符的setter和getter
   const getter = property && property.get
   const setter = property && property.set
+
+  // 如果没有getter 或者setter存在, 并且obj和key都有传
   if ((!getter || setter) && arguments.length === 2) {
+    // value就等于obj的[key]
     val = obj[key]
   }
 
+  // shallow为false, 则observe(value)
   let childOb = !shallow && observe(val)
+
+  // 使用Object.defineProperty
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
+    // 读取key属性钱的操作
+    // 对对象中的每个属性都建立观察依赖
     get: function reactiveGetter () {
+      // 如果getter存在, 则调用getter方法
+      // 如果没有就将val赋值给value
       const value = getter ? getter.call(obj) : val
+      // 如果存在全局的观察者对象
       if (Dep.target) {
+        // 建立依赖
         dep.depend()
+        // childOb存在
         if (childOb) {
+          // 调用childOb.dep建立依赖
           childOb.dep.depend()
+          // 如果value是一个数组
           if (Array.isArray(value)) {
             dependArray(value)
           }
@@ -170,24 +207,33 @@ export function defineReactive (
       }
       return value
     },
+    // 属性的set操作
+    //
     set: function reactiveSetter (newVal) {
+      // 先获取旧的值
       const value = getter ? getter.call(obj) : val
       /* eslint-disable no-self-compare */
+      // 如果新设置的值等于旧的值
+      // (newVal !== newVal && value !== value)判断NaN
       if (newVal === value || (newVal !== newVal && value !== value)) {
         return
       }
       /* eslint-enable no-self-compare */
+      // 如果nodejs的环境不是production并且有自定义setter调用自定义setter
       if (process.env.NODE_ENV !== 'production' && customSetter) {
         customSetter()
       }
       // #7981: for accessor properties without setter
+      // 如果没有setter返回
       if (getter && !setter) return
+      // 如果存在setter调用setter
       if (setter) {
         setter.call(obj, newVal)
       } else {
         val = newVal
       }
       childOb = !shallow && observe(newVal)
+      // 调用依赖收集器的通知方法
       dep.notify()
     }
   })
@@ -202,7 +248,7 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
   if (process.env.NODE_ENV !== 'production' &&
     (isUndef(target) || isPrimitive(target))
   ) {
-    warn(`Cannot set reactive property on undefined, null, or primitive value: ${(target: any)}`)
+    warn(`Cannot set reactive property on undefined, null, or primitive value: ${target: any}`)
   }
   if (Array.isArray(target) && isValidArrayIndex(key)) {
     target.length = Math.max(target.length, key)
@@ -237,7 +283,7 @@ export function del (target: Array<any> | Object, key: any) {
   if (process.env.NODE_ENV !== 'production' &&
     (isUndef(target) || isPrimitive(target))
   ) {
-    warn(`Cannot delete reactive property on undefined, null, or primitive value: ${(target: any)}`)
+    warn(`Cannot delete reactive property on undefined, null, or primitive value: ${target: any}`)
   }
   if (Array.isArray(target) && isValidArrayIndex(key)) {
     target.splice(key, 1)
@@ -265,6 +311,7 @@ export function del (target: Array<any> | Object, key: any) {
  * Collect dependencies on array elements when the array is touched, since
  * we cannot intercept array element access like property getters.
  */
+// 递归将调用数组每个观察者的depend
 function dependArray (value: Array<any>) {
   for (let e, i = 0, l = value.length; i < l; i++) {
     e = value[i]

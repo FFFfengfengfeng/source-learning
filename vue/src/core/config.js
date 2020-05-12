@@ -121,6 +121,7 @@ export default ({
    * Perform updates asynchronously. Intended to be used by Vue Test Utils
    * This will significantly reduce performance if set to false.
    */
+  // 默认为异步
   async: true,
 
   /**
