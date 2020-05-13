@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <p>{{ msg }}</p>
+    <a href="javascript:;" @click="handleClick">点击</a>
+    <li v-for="(item, index) in list" :key="index">
+      <p>姓名: {{ item.name }}, 年龄: {{ item.age }}</p>
+    </li>
+  </div>
+  <script src="./vue-dev/dist/vue.js"></script>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        msg: 'FFF',
+        list: [
+          {
+            name: 'FFF',
+            age: 18
+          },
+          {
+            name: 'WWW',
+            age: 18
+          },
+          {
+            name: 'AAA',
+            age: 18
+          },
+        ]
+      },
+      methods: {
+        handleClick() {
+          this.msg = this.msg === 'FFF' ? 'WWW' : 'FFF'
+        }
+      }
+    })
+  </script>
+</body>
+</html>
